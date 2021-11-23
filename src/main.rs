@@ -1,3 +1,4 @@
+use std::env;
 use std::error::Error;
 
 mod api;
@@ -8,6 +9,12 @@ mod feature;
 async fn main() -> Result<(), Box<dyn Error>> {
     let data = api::get_json_data().await?;
     let features = feature::json_to_features(data)?;
-    println!("{}", serde_json::to_string(&features)?);
+    let args: Vec<String> = env::args().collect::<Vec<String>>();
+    if args.len() < 2 || args[1].len() == 0 {
+        panic!("No query passed as argument.");
+    }
+
+    let query = &args[1];
+    println!("{}", query);
     Ok(())
 }
