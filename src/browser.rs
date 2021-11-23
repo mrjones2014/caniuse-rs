@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub enum Browser {
     IE(String),
     Safari(String),
