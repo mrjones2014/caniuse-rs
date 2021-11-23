@@ -1,7 +1,7 @@
 use crate::browser::Browser;
 use std::fmt::Display;
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Feature {
     pub name: String,
     pub title: String,
@@ -12,6 +12,10 @@ pub struct Feature {
 
 impl Display for Feature {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.stats.is_empty() || self.stats.iter().all(|f| f.is_none()) {
+            write!(f, "{}", self.title)?;
+        }
+
         let stats_string = self
             .stats
             .iter()
@@ -88,7 +92,7 @@ fn parse_browser_version(value: &serde_json::Value) -> Result<String, Error> {
         }
     }
 
-    Ok(final_support_str.unwrap_or_else(|| String::from("N/A")))
+    Ok(final_support_str.unwrap_or_else(|| String::from("No")))
 }
 
 fn parse_browsers(value: &serde_json::Value) -> Result<[Option<Browser>; 4], Error> {
