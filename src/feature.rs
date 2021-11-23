@@ -79,20 +79,16 @@ fn parse_browser_version(value: &serde_json::Value) -> Result<String, Error> {
         if support_str.contains("y x") {
             min_supported_version = version_key_as_float;
             final_support_str = Some(format!("{} w/prefix", version_key));
-        } else if support_str.contains("a") {
+        } else if support_str.contains('a') {
             min_supported_version = version_key_as_float;
             final_support_str = Some(format!("{} (partial)", version_key))
-        } else if support_str.contains("p") {
+        } else if support_str.contains('p') {
             min_supported_version = version_key_as_float;
             final_support_str = Some(format!("{} w/polyfill", version_key))
         }
     }
 
-    Ok(if final_support_str.is_some() {
-        final_support_str.unwrap()
-    } else {
-        String::from("N/A")
-    })
+    Ok(final_support_str.unwrap_or_else(|| String::from("N/A")))
 }
 
 fn parse_browsers(value: &serde_json::Value) -> Result<[Option<Browser>; 4], Error> {
@@ -112,9 +108,9 @@ fn parse_browsers(value: &serde_json::Value) -> Result<[Option<Browser>; 4], Err
             _ => None,
         };
 
-        if browser.is_some() {
-            browsers[idx] = Some(browser.unwrap());
-            idx = idx + 1;
+        if let Some(browser_val) = browser {
+            browsers[idx] = Some(browser_val);
+            idx += 1;
         }
     }
 

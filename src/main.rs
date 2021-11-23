@@ -8,9 +8,9 @@ mod feature;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let data = api::get_json_data().await?;
-    let features = feature::json_to_features(data)?;
+    let _features = feature::json_to_features(data)?;
     let args: Vec<String> = env::args().collect::<Vec<String>>();
-    if args.len() < 2 || args[1].len() == 0 {
+    if args.len() < 2 || args[1].is_empty() {
         panic!("No query passed as argument.");
     }
 
