@@ -6,6 +6,8 @@ A Rust client for [caniuse.com](https://caniuse.com). It pulls data from caniuse
 in a transformed JSON structure that is easier to reason about. It will update data on next run after 24 hours
 since last update.
 
+![demo](https://github.com/mrjones2014/caniuse-rs/raw/master/images/demo.gif)
+
 ## Options
 
 To dump the data instead of fuzzy finding, you can run `caniuse --dump` which will simply output the
