@@ -33,3 +33,18 @@ impl From<Feature> for AlfredItem {
         }
     }
 }
+
+pub fn get_json(features: &Vec<Feature>, query: &str) -> Result<String, serde_json::Error> {
+    let alfred_items = AlfredItemList {
+        items: features
+            .iter()
+            .filter(|feature| {
+                let match_str = feature.string_for_matching().to_lowercase();
+                match_str.contains(&query) || query.contains(&match_str)
+            })
+            .map(|feature| AlfredItem::from(feature.to_owned()))
+            .collect(),
+    };
+
+    serde_json::to_string(&alfred_items)
+}

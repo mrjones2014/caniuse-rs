@@ -90,14 +90,14 @@ pub fn get_json_data() -> Result<String, ApiError> {
     Ok(body)
 }
 
-pub fn ensure_cached_data() -> Result<(), ApiError> {
+pub fn ensure_cached_data(force: bool) -> Result<(), ApiError> {
     touch_cache_file()?;
     let metadata = fs::metadata(&*constants::CACHE_PATH)?;
     let since_last_modified = SystemTime::now()
         .duration_since(metadata.modified()?)?
         .as_secs();
 
-    if metadata.size() == 0 || since_last_modified > ONE_DAY_IN_SECONDS {
+    if force || metadata.size() == 0 || since_last_modified > ONE_DAY_IN_SECONDS {
         let json = get_json_data()?;
         let features = feature::json_to_features(json)?;
         let mut file = OpenOptions::new()
@@ -117,7 +117,7 @@ pub fn get_data() -> Result<Vec<Feature>, ApiError> {
         Ok(features) => Ok(features),
         Err(_) => {
             // if error, try updating the cache and try again
-            ensure_cached_data()?;
+            ensure_cached_data(false)?;
             let json = fs::read_to_string(&*constants::CACHE_PATH)?;
             let features: Vec<Feature> = serde_json::from_str(&json)?;
             Ok(features)

@@ -3,8 +3,6 @@ extern crate lazy_static;
 
 use std::{env, error::Error};
 
-use alfred_integration::{AlfredItem, AlfredItemList};
-
 mod alfred_integration;
 mod api;
 mod browser;
@@ -14,25 +12,22 @@ mod skim_finder;
 mod url;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let features = api::get_data()?;
     let args: Vec<String> = env::args().map(|arg| arg.to_lowercase()).collect();
+    let update_cache = args.contains(&String::from("--update"));
+    api::ensure_cached_data(update_cache)?;
+    if update_cache {
+        println!("Updated cache written to {}", &*constants::CACHE_PATH);
+        return Ok(());
+    }
+
+    let features = api::get_data()?;
 
     if args.contains(&String::from("--alfred")) {
         if args.len() < 2 {
             panic!("--alfred must be the only option and must immediately be followed by a query");
         }
         let query = args[2..].join(" ").to_lowercase();
-        let alfred_items = AlfredItemList {
-            items: features
-                .iter()
-                .filter(|feature| {
-                    let match_str = feature.string_for_matching().to_lowercase();
-                    match_str.contains(&query) || query.contains(&match_str)
-                })
-                .map(|feature| AlfredItem::from(feature.to_owned()))
-                .collect(),
-        };
-        println!("{}", serde_json::to_string(&alfred_items)?);
+        println!("{}", alfred_integration::get_json(&features, &query)?);
         return Ok(());
     }
 
