@@ -6,7 +6,7 @@ use skim::{ItemPreview, SkimItem};
 
 impl SkimItem for Feature {
     fn text(&self) -> std::borrow::Cow<str> {
-        Cow::from(format!("{}", self))
+        Cow::from(self.string_for_matching())
     }
 
     fn preview(&self, _context: skim::PreviewContext) -> skim::ItemPreview {

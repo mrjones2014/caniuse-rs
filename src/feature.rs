@@ -10,6 +10,12 @@ pub struct Feature {
     pub stats: [Option<Browser>; 4],
 }
 
+impl Feature {
+    pub fn string_for_matching(&self) -> String {
+        format!("{}: {}: {}", self.name, self, self.description)
+    }
+}
+
 impl Display for Feature {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.stats.is_empty() || self.stats.iter().all(|f| f.is_none()) {

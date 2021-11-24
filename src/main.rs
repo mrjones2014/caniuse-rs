@@ -3,6 +3,7 @@ extern crate lazy_static;
 
 use std::{env, error::Error};
 
+mod alfred_integration;
 mod api;
 mod browser;
 mod constants;
