@@ -1,18 +1,31 @@
 name: Create Alfred Workflow
-
 on:
   push:
     tags:
       - 'v*'
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build Rust Binary
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - name: Cargo login
+      run: cargo login ${{ secrets.CARGO_TOKEN }}
+    - uses: actions-rs/cargo@v1
+      with:
+        command: login
+        args: ${{ CARGO_TOKEN }}
+    - uses: actions-rs/cargo@v1
+      with:
+        command: publish
+    - uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
+    - name: Create Alfred workflow directory
       run: |
-        cargo build --release
         mkdir -p alfred-workflow
         cp target/release/caniuse alfred-workflow/caniuse
     - name: Build Alfred Workflow
