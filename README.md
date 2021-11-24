@@ -2,11 +2,13 @@
 
 **This project is a WIP and should not be considered stable.**
 
-A Rust client for [caniuse.com](https://caniuse.com). It pulls data from caniuse.com and caches it locally,
-in a transformed JSON structure that is easier to reason about. It will update data on next run after 24 hours
-since last update.
+A Rust client for [caniuse.com](https://caniuse.com).
 
 ![demo](https://github.com/mrjones2014/caniuse-rs/raw/master/images/demo.gif)
+
+It pulls data from caniuse.com and caches it locally, in a transformed JSON structure
+that is easier to reason about. It will update data on next run after 24 hours since
+last update. Fuzzy finder is built using [skim](https://github.com/lotabout/skim).
 
 ## Options
 
