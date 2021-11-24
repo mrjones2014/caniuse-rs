@@ -11,12 +11,10 @@ jobs:
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
-    - name: Cargo login
-      run: cargo login ${{ secrets.CARGO_TOKEN }}
     - uses: actions-rs/cargo@v1
       with:
         command: login
-        args: ${{ CARGO_TOKEN }}
+        args: ${{ secrets.CARGO_TOKEN }}
     - uses: actions-rs/cargo@v1
       with:
         command: publish
