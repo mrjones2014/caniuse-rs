@@ -8,17 +8,11 @@ pub struct AlfredItemList {
 }
 
 #[derive(Serialize)]
-pub struct AlfredOpenUrlAction {
-    pub url: String,
-}
-
-#[derive(Serialize)]
 pub struct AlfredItem {
     pub title: String,
     pub subtitle: String,
     pub arg: String,
     pub r#match: String,
-    pub action: AlfredOpenUrlAction,
 }
 
 impl From<Feature> for AlfredItem {
@@ -27,9 +21,8 @@ impl From<Feature> for AlfredItem {
         AlfredItem {
             title: feature.title,
             subtitle: feature.description,
-            arg: feature.name,
+            arg: feature.url,
             r#match: match_str,
-            action: AlfredOpenUrlAction { url: feature.url },
         }
     }
 }
