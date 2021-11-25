@@ -23,6 +23,7 @@ jobs:
         zip -j -D caniuse.alfredworkflow target/release/caniuse
         zip -j -D caniuse.alfredworkflow README.md
         zip -j -D caniuse.alfredworkflow LICENSE
+        zip -j -D caniuse.alfredworkflow images/icon.png
         echo "::set-output name=workflow_file::caniuse.alfredworkflow"
     - name: Create Release
       id: create_release
