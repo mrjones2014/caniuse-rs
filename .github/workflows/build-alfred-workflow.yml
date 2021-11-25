@@ -5,27 +5,25 @@ on:
       - 'v*'
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
-    - name: Add x86_64-apple-darwin target
-      run: rustup target add x86_64-apple-darwin
     - uses: actions-rs/cargo@v1
       with:
         command: build
-        args: --release --target x86_64-apple-darwin
-    - name: Create Alfred workflow directory
-      run: |
-        mkdir -p alfred-workflow
-        cp target/release/caniuse alfred-workflow/caniuse
-    - name: Build Alfred Workflow
+        args: --release
+    - name: Create Alfred workflow package
       id: alfred_builder
-      uses: mperezi/build-alfred-workflow@v1
-      with:
-        workflow_dir: alfred-workflow
+      run: |
+        rm -f alfred-workflow/caniuse
+        cp target/release/caniuse alfred-workflow/caniuse
+        cp README.md alfred-workflow
+        cp LICENSE alfred-workflow
+        zip -r caniuse.alfredworkflow alfred-workflow/
+        echo "::set-output name=workflow_file::caniuse.alfredworkflow"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
