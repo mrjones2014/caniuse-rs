@@ -18,11 +18,11 @@ jobs:
     - name: Create Alfred workflow package
       id: alfred_builder
       run: |
-        rm -f alfred-workflow/caniuse
-        cp target/release/caniuse alfred-workflow/caniuse
-        cp README.md alfred-workflow
-        cp LICENSE alfred-workflow
-        zip -r caniuse.alfredworkflow alfred-workflow/
+        rm -f caniuse.alfredworkflow
+        zip -j -D caniuse.alfredworkflow info.plist
+        zip -j -D caniuse.alfredworkflow target/release/caniuse
+        zip -j -D caniuse.alfredworkflow README.md
+        zip -j -D caniuse.alfredworkflow LICENSE
         echo "::set-output name=workflow_file::caniuse.alfredworkflow"
     - name: Create Release
       id: create_release
