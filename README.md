@@ -8,6 +8,22 @@ It pulls data from caniuse.com and caches it locally, in a transformed JSON stru
 that is easier to reason about. It will update data on next run after 24 hours since
 last update. Fuzzy finder is built using [skim](https://github.com/lotabout/skim).
 
+## Install
+
+To install, run `cargo install caniuse-rs`. The installed binary is named `caniuse`.
+
+### Alfred Workflow
+
+You can use this as an [Alfred](https://www.alfredapp.com) workflow on MacOS by downloading the
+`*.alfredworkflow` file from the [latest release](https://github.com/mrjones2014/caniuse-rs/releases)
+and double-clicking the file from Finder once downloaded.
+
+## Usage
+
+Run `caniuse` by itself to open the fuzzy finder, then enter a search query to fuzzy find
+what you're looking for. Pressing enter will open the selected item. If no items match,
+pressing enter will search for the query you've typed by opening `https://caniuse.com/?search={query}`.
+
 ## Options
 
 To dump the data instead of fuzzy finding, you can run `caniuse --dump` which will simply output the

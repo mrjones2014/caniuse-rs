@@ -36,9 +36,12 @@ pub fn find_with_skim(items: &[Feature]) {
         }
 
         let selected = out.selected_items.first();
-        if let Some(item) = selected {
-            let selected_feature = (**item).as_any().downcast_ref::<Feature>().unwrap();
-            url::open(&selected_feature.url);
+        match selected {
+            Some(item) => {
+                let selected_feature = (**item).as_any().downcast_ref::<Feature>().unwrap();
+                url::open(&selected_feature.url);
+            }
+            None => url::open(format!("https://caniuse.com/?search={}", out.query)),
         }
     });
 }

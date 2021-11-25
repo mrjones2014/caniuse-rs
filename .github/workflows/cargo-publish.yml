@@ -1,0 +1,20 @@
+name: Create Alfred Workflow
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build:
+    runs-on: macos-11
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - uses: actions-rs/cargo@v1
+      with:
+        command: login
+        args: ${{ secrets.CARGO_TOKEN }}
+    - uses: actions-rs/cargo@v1
+      with:
+        command: publish
