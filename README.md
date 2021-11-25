@@ -16,7 +16,9 @@ To install, run `cargo install caniuse-rs`. The installed binary is named `caniu
 
 You can use this as an [Alfred](https://www.alfredapp.com) workflow on MacOS by downloading the
 `*.alfredworkflow` file from the [latest release](https://github.com/mrjones2014/caniuse-rs/releases)
-and double-clicking the file from Finder once downloaded.
+and double-clicking the file from Finder once downloaded. Most likely, after attempting to run
+for the first time, you will need to open MacOS System Preferences -> Security & Privacy, then click
+"Allow Anyway" to allow the `caniuse` executable to run.
 
 ## Usage
 
