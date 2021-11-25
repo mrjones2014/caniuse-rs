@@ -1,4 +1,4 @@
-name: Create Alfred Workflow
+name: Cargo Publish
 on:
   push:
     tags:
