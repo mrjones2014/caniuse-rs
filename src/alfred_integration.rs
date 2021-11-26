@@ -27,7 +27,7 @@ impl From<Feature> for AlfredItem {
     }
 }
 
-pub fn get_json(features: &Vec<Feature>, query: &str) -> Result<String, serde_json::Error> {
+pub fn get_json(features: &[Feature], query: &str) -> Result<String, serde_json::Error> {
     let alfred_items = AlfredItemList {
         items: features
             .iter()
