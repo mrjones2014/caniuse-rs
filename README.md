@@ -25,7 +25,8 @@ System Preferences -> Security & Privacy -> General tab, then click "Allow Anywa
 ### Alfred Workflow
 
 You can use this as an [Alfred](https://www.alfredapp.com) workflow on MacOS by downloading the
-`*.alfredworkflow` file from the [latest GitHub release](https://github.com/mrjones2014/caniuse-rs/releases)
+`*.alfredworkflow` file for your platform (`caniuse-x86.alfredworkflow` for Intel Macs,
+`caniuse-arm.alfredworkflow` for M1 macs) from the [latest GitHub release](https://github.com/mrjones2014/caniuse-rs/releases)
 and double-clicking the file from Finder once downloaded. After attempting to run
 for the first time, you will need to open MacOS System Preferences -> Security & Privacy -> General tab,
 then click "Allow Anyway" to allow the `caniuse` executable to run.
