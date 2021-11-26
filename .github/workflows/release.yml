@@ -5,7 +5,7 @@ on:
       - 'v*'
 
 jobs:
-  lint-with-clippy:
+  lint_with_clippy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,7 +18,7 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
-    needs: lint-with-clippy
+    needs: lint_with_clippy
     outputs: # map step output to job output for use in the GitHub Release job
       caniuse-linux-x86: ${{ steps.build-linux.outputs.caniuse-linux-x86 }}
     steps:
@@ -36,7 +36,7 @@ jobs:
 
   build-mac-x86:
     runs-on: macos-11
-    needs: lint-with-clippy
+    needs: lint_with_clippy
     outputs: # map step output to job output for use in the GitHub Release job
       caniuse-macos-x86: ${{ steps.build-mac-x86.outputs.caniuse-macos-x86 }}
       alfred-workflow-x86: ${{ steps.alfred-workflow-x86.outputs.alfred-workflow-x86 }}
@@ -61,7 +61,7 @@ jobs:
 
   build-mac-arm:
     runs-on: macos-11
-    needs: lint-with-clippy
+    needs: lint_with_clippy
     outputs: # map step output to job output for use in the GitHub Release job
       caniuse-macos-arm: ${{ steps.build-mac-arm.outputs.caniuse-macos-arm }}
       alfred_workflow_file_arm: ${{ steps.alfred-workflow-arm.outputs.alfred-workflow-arm }}
@@ -83,7 +83,7 @@ jobs:
           make WORKFLOW_FILE_NAME="caniuse-arm.alfredworkflow" CANIUSE_BIN="target/aarch64-apple-darwin/release/caniuse" alfred-workflow
           echo "::set-output name=alfred-workflow-arm::caniuse-arm.alfredworkflow"
 
-  create-github-release:
+  create_github_release:
     runs-on: ubuntu-latest
     needs: [build-linux, build-mac-x86, build-mac-arm]
     steps:
@@ -100,9 +100,9 @@ jobs:
             ${{ needs.build-mac-arm.outputs.alfred-workflow-arm }}
             ${{ needs.build-linux.outputs.caniuse-linux-x86 }}
 
-  cargo-publish:
+  cargo_publish:
     runs-on: ubuntu-latest
-    needs: create-github-release
+    needs: create_github_release
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
