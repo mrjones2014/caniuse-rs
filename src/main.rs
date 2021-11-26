@@ -13,6 +13,13 @@ mod url;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().map(|arg| arg.to_lowercase()).collect();
+
+    let version = env!("CARGO_PKG_VERSION");
+    if args.contains(&String::from("--version")) {
+        println!("caniuse v{}", version);
+        return Ok(());
+    }
+
     let update_cache = args.contains(&String::from("--update"));
     api::ensure_cached_data(update_cache)?;
     if update_cache {
@@ -20,14 +27,26 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
+    if args.contains(&String::from("--help")) {
+        println!("{}", constants::HELP_TEXT);
+        return Ok(());
+    }
+
     let features = api::get_data()?;
 
-    if args.contains(&String::from("--alfred")) {
+    if args.contains(&String::from("--query")) {
         if args.len() < 2 {
-            panic!("--alfred must be the only option and must immediately be followed by a query");
+            panic!("--query must must immediately be followed by a query");
         }
-        let query = args[2..].join(" ").to_lowercase();
-        println!("{}", alfred_integration::get_json(&features, &query)?);
+        let query = &args[2];
+        println!(
+            "{}",
+            alfred_integration::get_json(
+                &features,
+                &query,
+                &args.contains(&String::from("--pretty"))
+            )?
+        );
         return Ok(());
     }
 

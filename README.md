@@ -40,7 +40,15 @@ pressing enter will search for the query you've typed by opening `https://canius
 
 ## Options
 
-To dump the data instead of fuzzy finding, you can run `caniuse --dump` which will simply output the
-currently cached JSON data that is being used. To pretty-print it, you can run `caniuse --dump --pretty`.
+```
+ caniuse [options]
 
-To force update the cached data, you can run `caniuse --update`.
+ OPTIONS:
+
+ --dump           Dump the currently cached JSON data and exit
+ --pretty         Pretty-print the JSON output, must be combined with --dump or --query [query]
+ --query [query]  Output JSON instead of using fuzzy-finder, used for Alfred integration
+ --update         Force update the currently cached JSON data and exit
+ --version        Print the version and exit
+ --help           Show this help text
+```

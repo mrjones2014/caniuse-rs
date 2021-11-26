@@ -27,7 +27,11 @@ impl From<Feature> for AlfredItem {
     }
 }
 
-pub fn get_json(features: &[Feature], query: &str) -> Result<String, serde_json::Error> {
+pub fn get_json(
+    features: &[Feature],
+    query: &str,
+    pretty: &bool,
+) -> Result<String, serde_json::Error> {
     let alfred_items = AlfredItemList {
         items: features
             .iter()
@@ -39,5 +43,8 @@ pub fn get_json(features: &[Feature], query: &str) -> Result<String, serde_json:
             .collect(),
     };
 
-    serde_json::to_string(&alfred_items)
+    match pretty {
+        true => serde_json::to_string_pretty(&alfred_items),
+        false => serde_json::to_string(&alfred_items),
+    }
 }
