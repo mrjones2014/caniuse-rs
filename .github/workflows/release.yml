@@ -19,8 +19,6 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     needs: lint-with-clippy
-    outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-linux-x86: ${{ steps.build-linux.outputs.caniuse-linux-x86 }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -32,13 +30,15 @@ jobs:
         id: build-linux
         run: |
           make build-linux
-          echo "::set-output name=caniuse-linux-x86::target/x86_64-unknown-linux-gnu/release/caniuse"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: caniuse-linux-x86
+          path: target/x86_64-unknown-linux-gnu/release/caniuse
 
   build-macos-x86:
     runs-on: macos-11
     needs: lint-with-clippy
-    outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-macos-x86: ${{ steps.build-macos-x86.outputs.caniuse-macos-x86 }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -51,12 +51,15 @@ jobs:
         run: |
           make build-macos-x86
           echo "::set-output name=caniuse-macos-x86::target/x86_64-apple-darwin/release/caniuse"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: caniuse-macos-x86
+          path: target/x86_64-apple-darwin/release/caniuse
 
   build-macos-arm:
     runs-on: macos-11
     needs: lint-with-clippy
-    outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-macos-arm: ${{ steps.build-macos-arm.outputs.caniuse-macos-arm }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -68,43 +71,82 @@ jobs:
         id: build-macos-arm
         run: |
           make build-macos-arm
-          echo "::set-output name=caniuse-macos-arm::target/aarch64-apple-darwin/release/caniuse"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: caniuse-macos-arm
+          path: target/aarch64-apple-darwin/release/caniuse
 
   build-alfred-workflows:
     runs-on: macos-11
     needs: [build-macos-x86, build-macos-arm]
-    outputs: # map step output to job output for use in the GitHub Release job
-      alfred-workflow-file-x86: ${{ steps.build-alfred-workflows.outputs.alfred-workflow-file-x86 }}
-      alfred-workflow-file-arm: ${{ steps.build-alfred-workflows.outputs.alfred-workflow-file-arm }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+      - name: Download MacOS x86 Build Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: caniuse-macos-x86
+      - name: Download MacOS ARM Build Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: caniuse-macos-arm
       - name: Create Alfred Workflow File
         id: build-alfred-workflows
         run: |
-          make WORKFLOW_FILE_NAME="caniuse-x86.alfredworkflow" CANIUSE_BIN="${{ needs.build-macos-x86.outputs.caniuse-macos-x86 }}" alfred-workflow
-          make WORKFLOW_FILE_NAME="caniuse-arm.alfredworkflow" CANIUSE_BIN="${{ needs.build-macos-arm.outputs.caniuse-macos-arm }}" alfred-workflow
-          echo "::set-output name=alfred-workflow-file-x86::caniuse-x86.alfredworkflow"
-          echo "::set-output name=alfred-workflow-file-arm::caniuse-arm.alfredworkflow"
+          make WORKFLOW_FILE_NAME="caniuse-macos-x86.alfredworkflow" CANIUSE_BIN="caniuse-macos-x86" alfred-workflow
+          make WORKFLOW_FILE_NAME="caniuse-macos-arm.alfredworkflow" CANIUSE_BIN="caniuse-macos-arm" alfred-workflow
+      - name: Upload MacOS x86 Alfred Workflow File
+        uses: actions/upload-artifact@v2
+        with:
+          name: alfred-workflow-x86
+          path: caniuse-macos-x86.alfredworkflow
+      - name: Upload MacOS ARM Alfred Workflow File
+        uses: actions/upload-artifact@v2
+        with:
+          name: alfred-workflow-arm
+          path: caniuse-macos-arm.alfredworkflow
 
   create-github-release:
     runs-on: ubuntu-latest
     needs: [build-linux, build-macos-x86, build-macos-arm, build-alfred-workflows]
     steps:
       - uses: actions/checkout@v2
+      - name: Download MacOS x86 Build Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: caniuse-macos-x86
+      - name: Download MacOS ARM Build Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: caniuse-macos-arm
+      - name: Download Linux x86 Build Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: caniuse-linux-x86
+      - name: Download x86 Alfred Workflow File
+        uses: actions/download-artifact@v2
+        with:
+          name: alfred-workflow-x86
+          path: ./caniuse-macos-x86.alfredworkflow
+      - name: Download ARM Alfred Workflow File
+        uses: actions/download-artifact@v2
+        with:
+          name: alfred-workflow-arm
+          path: ./caniuse-macos-arm.alfredworkflow
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            ${{ needs.build-macos-x86.outputs.caniuse-macos-x86 }}
-            ${{ needs.build-macos-arm.outputs.caniuse-macos-arm }}
-            ${{ needs.build-linux.outputs.caniuse-linux-x86 }}
-            ${{ needs.build-alfred-workflows.outputs.alfred-workflow-file-x86 }}
-            ${{ needs.build-alfred-workflows.outputs.alfred-workflow-file-arm }}
+            caniuse-macos-x86
+            caniuse-macos-x86.alfredworkflow
+            caniuse-macos-arm
+            caniuse-macos-arm.alfredworkflow
+            caniuse-linux-x86
 
   cargo-publish:
     runs-on: ubuntu-latest
