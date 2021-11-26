@@ -30,23 +30,16 @@ build-linux:
 build:
 	cargo build
 
-.PHONY: alfred-workflow-x86
-alfred-workflow-x86:
+.PHONY: alfred-workflow
+alfred-workflow:
+	@if [ "$(WORKFLOW_FILE_NAME)" = "" ]; then echo "WORKFLOW_FILE_NAME variable not set"; exit 1; fi
+	@if [ "$(CANIUSE_BIN)" = "" ]; then echo "CANIUSE_BIN variable not set"; exit 1; fi
 	rm -f caniuse-x86.alfredworkflow
-	zip -j -D caniuse-x86.alfredworkflow info.plist
-	zip -j -D caniuse-x86.alfredworkflow README.md
-	zip -j -D caniuse-x86.alfredworkflow LICENSE
-	zip -j -D caniuse-x86.alfredworkflow images/icon.png
-	zip -j -D caniuse-x86.alfredworkflow target/x86_64-apple-darwin/release/caniuse
-
-.PHONY: alfred-workflow-arm
-alfred-workflow-arm:
-	rm -f caniuse-arm.alfredworkflow
-	zip -j -D caniuse-arm.alfredworkflow info.plist
-	zip -j -D caniuse-arm.alfredworkflow README.md
-	zip -j -D caniuse-arm.alfredworkflow LICENSE
-	zip -j -D caniuse-arm.alfredworkflow images/icon.png
-	zip -j -D caniuse-arm.alfredworkflow target/aarch64-apple-darwin/release/caniuse
+	zip -j -D $(WORKFLOW_FILE_NAME) info.plist
+	zip -j -D $(WORKFLOW_FILE_NAME) README.md
+	zip -j -D $(WORKFLOW_FILE_NAME) LICENSE
+	zip -j -D $(WORKFLOW_FILE_NAME) images/icon.png
+	zip -j -D $(WORKFLOW_FILE_NAME) $(CANIUSE_BIN)
 
 .PHONY: publish
 publish:

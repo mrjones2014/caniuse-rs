@@ -74,7 +74,8 @@ jobs:
     runs-on: macos-11
     needs: [build_mac_x86, build_mac_arm]
     outputs: # map step output to job output for use in the GitHub Release job
-      alfred_workflow_file: ${{ steps.build_alfred_workflows.outputs.alfred_workflow_file }}
+      alfred_workflow_file_x86: ${{ steps.build_alfred_workflows.outputs.alfred_workflow_file_x86 }}
+      alfred_workflow_file_arm: ${{ steps.build_alfred_workflows.outputs.alfred_workflow_file_arm }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -83,8 +84,8 @@ jobs:
       - name: Create Alfred Workflow File
         id: build_alfred_workflows
         run: |
-          make alfred-workflow-x86
-          make alfred-workflow-arm
+          make WORKFLOW_FILE_NAME="caniuse-x86.alfredworkflow" CANIUSE_BIN="${{ needs.build_mac_x86.outputs.caniuse-macos-x86 }}" alfred-workflow
+          make WORKFLOW_FILE_NAME="caniuse-arm.alfredworkflow" CANIUSE_BIN="${{ needs.build_mac_arm.outputs.caniuse-macos-arm }}" alfred-workflow
           echo "::set-output name=alfred_workflow_file_x86::caniuse-x86.alfredworkflow"
           echo "::set-output name=alfred_workflow_file_arm::caniuse-arm.alfredworkflow"
 
