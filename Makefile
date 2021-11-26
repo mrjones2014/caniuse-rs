@@ -13,18 +13,18 @@ install-targets-linux:
 .PHONY: build-macos-x86
 build-macos-x86:
 	cargo build --release --target x86_64-apple-darwin
-	test -f target/x86_64-apple-darwin/release/caniuse
+	cp target/x86_64-apple-darwin/release/caniuse ./caniuse-macos-x86
 
 
 .PHONY: build-macos-arm
 build-macos-arm:
 	cargo build --release --target aarch64-apple-darwin
-	test -f target/aarch64-apple-darwin/release/caniuse
+	cp target/aarch64-apple-darwin/release/caniuse ./caniuse-macos-arm
 
 .PHONY: build-linux
 build-linux:
 	cargo build --release --target x86_64-unknown-linux-gnu
-	test -f target/x86_64-unknown-linux-gnu/release/caniuse
+	cp target/x86_64-unknown-linux-gnu/release/caniuse ./caniuse-linux-x86
 
 .PHONY: build
 build:

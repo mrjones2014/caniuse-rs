@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: caniuse-linux-x86
-          path: target/x86_64-unknown-linux-gnu/release/caniuse
+          path: ./caniuse-linux-x86
 
   build-macos-x86:
     runs-on: macos-11
@@ -50,12 +50,11 @@ jobs:
         id: build-macos-x86
         run: |
           make build-macos-x86
-          echo "::set-output name=caniuse-macos-x86::target/x86_64-apple-darwin/release/caniuse"
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: caniuse-macos-x86
-          path: target/x86_64-apple-darwin/release/caniuse
+          path: ./caniuse-macos-x86
 
   build-macos-arm:
     runs-on: macos-11
@@ -75,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: caniuse-macos-arm
-          path: target/aarch64-apple-darwin/release/caniuse
+          path: ./caniuse-macos-arm
 
   build-alfred-workflows:
     runs-on: macos-11
@@ -96,7 +95,6 @@ jobs:
       - name: Create Alfred Workflow File
         id: build-alfred-workflows
         run: |
-          pwd && ls
           make WORKFLOW_FILE_NAME="caniuse-macos-x86.alfredworkflow" CANIUSE_BIN="caniuse-macos-x86" alfred-workflow
           make WORKFLOW_FILE_NAME="caniuse-macos-arm.alfredworkflow" CANIUSE_BIN="caniuse-macos-arm" alfred-workflow
       - name: Upload MacOS x86 Alfred Workflow File
@@ -131,12 +129,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: alfred-workflow-x86
-          path: ./caniuse-macos-x86.alfredworkflow
       - name: Download ARM Alfred Workflow File
         uses: actions/download-artifact@v2
         with:
           name: alfred-workflow-arm
-          path: ./caniuse-macos-arm.alfredworkflow
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:

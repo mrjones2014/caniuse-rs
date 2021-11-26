@@ -1,2 +1,4 @@
 /target
-/alfred-workflow/caniuse
+caniuse-linux-x86
+caniuse-macos-x86
+caniuse-macos-arm
