@@ -96,6 +96,7 @@ jobs:
       - name: Create Alfred Workflow File
         id: build-alfred-workflows
         run: |
+          pwd && ls
           make WORKFLOW_FILE_NAME="caniuse-macos-x86.alfredworkflow" CANIUSE_BIN="caniuse-macos-x86" alfred-workflow
           make WORKFLOW_FILE_NAME="caniuse-macos-arm.alfredworkflow" CANIUSE_BIN="caniuse-macos-arm" alfred-workflow
       - name: Upload MacOS x86 Alfred Workflow File
