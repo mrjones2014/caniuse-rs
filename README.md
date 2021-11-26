@@ -18,9 +18,10 @@ The installed binary is named `caniuse`.
 ### Prebuilt Binaries
 
 Prebulit binaries are available from the [latest GitHub release](https://github.com/mrjones2014/caniuse-rs/releases).
-Download the binary for your platform, rename it to `caniuse`, and put it somewhere on your `$PATH`.
-When installing this way on MacOS, after attempting to run for the first time, you will need to open MacOS
-System Preferences -> Security & Privacy -> General tab, then click "Allow Anyway" to allow the `caniuse` executable to run.
+Download the binary for your platform, rename it to `caniuse`, and put it somewhere on your `$PATH`. Then, you will
+need to make it executable by running `chmod +x path/to/caniuse`. When installing this way on MacOS, after attempting
+to run for the first time, you will need to open MacOS System Preferences -> Security & Privacy -> General tab, then
+click "Allow Anyway" to allow the `caniuse` executable to run.
 
 ### Alfred Workflow
 

@@ -133,11 +133,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: alfred-workflow-arm
-      - name: Make Binaries Executable
-        run: |
-          chmod +x caniuse-macos-x86
-          chmod +x caniuse-macos-arm
-          chmod +x caniuse-linux-x86
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
