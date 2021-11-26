@@ -39,7 +39,10 @@ alfred-workflow:
 	zip -j -D $(WORKFLOW_FILE_NAME) README.md
 	zip -j -D $(WORKFLOW_FILE_NAME) LICENSE
 	zip -j -D $(WORKFLOW_FILE_NAME) images/icon.png
-	zip -j -D $(WORKFLOW_FILE_NAME) $(CANIUSE_BIN)
+	# temporarily rename so it has the right name inside the zip
+	mv $(CANIUSE_BIN) caniuse
+	zip -j -D $(WORKFLOW_FILE_NAME) caniuse
+	mv caniuse $(CANIUSE_BIN)
 
 .PHONY: publish
 publish:
