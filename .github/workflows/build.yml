@@ -1,3 +1,4 @@
+# Basic compile check to run on every push to master and every PR to master
 name: Build Rust
 on:
   push:

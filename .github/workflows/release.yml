@@ -1,0 +1,73 @@
+name: Release to crates.io and GitHub Releases
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_all_targets:
+    runs-on: macos-11
+    outputs: # map step output to job output for use in the GitHub Release job
+      caniuse-macos-x86: ${{ steps.build_all_targets.outputs.caniuse-macos-x86 }}
+      caniuse-macos-m1: ${{ steps.build_all_targets.outputs.caniuse-macos-m1 }}
+      caniuse-linux-x86: ${{ steps.build_all_targets.outputs.caniuse-linux-x86 }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install Targets
+        run: make install-targets
+      - name: Build All Targets
+        id: build_all_targets
+        run: |
+          make all
+          make ensure-targets
+          echo "::set-output name=caniuse-macos-x86::target/x86_64-apple-darwin/release/caniuse"
+          echo "::set-output name=caniuse-macos-m1::target/aarch64-apple-darwin/release/caniuse"
+          echo "::set-output name=caniuse-linux-x86::target/x86_64-unknown-linux-gnu/release/caniuse"
+
+  build_alfred_workflow:
+    runs-on: macos-11
+    needs: build_all_targets
+    outputs: # map step output to job output for use in the GitHub Release job
+      alfred_workflow_file: ${{ steps.build_alfred_workflow.outputs.alfred_workflow_file }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Create Alfred Workflow File
+        id: build_alfred_workflow
+        run: |
+          make alfred-workflow
+          echo "::set-output name=alfred_workflow_file::caniuse.alfredworkflow"
+
+  create-github-release:
+    runs-on: macos-11
+    needs: [build_all_targets, build_alfred_workflow]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            ${{ needs.build_all_targets.outputs.caniuse-macos-x86 }}
+            ${{ needs.build_all_targets.outputs.caniuse-macos-m1 }}
+            ${{ needs.build_all_targets.outputs.caniuse-linux-x86 }}
+            ${{ needs.build_alfred_workflow.outputs.alfred_workflow_file }}
+
+  cargo-publish:
+    runs-on: macos-11
+    needs: create-github-release
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Cargo Publish
+        env:
+          CARGO_TOKEN: ${{ secrets.CARGO_TOKEN }}
+        run: make publish

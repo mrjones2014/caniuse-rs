@@ -10,15 +10,25 @@ last update. Fuzzy finder is built using [skim](https://github.com/lotabout/skim
 
 ## Install
 
-To install, run `cargo install caniuse-rs`. The installed binary is named `caniuse`.
+### Via Cargo
+
+If you have a Rust toolchain installed, you can install by running `cargo install caniuse-rs`.
+The installed binary is named `caniuse`.
+
+### Prebuilt Binaries
+
+Prebulit binaries are available from the [latest GitHub release](https://github.com/mrjones2014/caniuse-rs/releases).
+Download the binary for your platform, rename it to `caniuse`, and put it somewhere on your `$PATH`.
+When installing this way on MacOS, after attempting to run for the first time, you will need to open MacOS
+System Preferences -> Security & Privacy -> General tab, then click "Allow Anyway" to allow the `caniuse` executable to run.
 
 ### Alfred Workflow
 
 You can use this as an [Alfred](https://www.alfredapp.com) workflow on MacOS by downloading the
-`*.alfredworkflow` file from the [latest release](https://github.com/mrjones2014/caniuse-rs/releases)
-and double-clicking the file from Finder once downloaded. Most likely, after attempting to run
-for the first time, you will need to open MacOS System Preferences -> Security & Privacy, then click
-"Allow Anyway" to allow the `caniuse` executable to run.
+`*.alfredworkflow` file from the [latest GitHub release](https://github.com/mrjones2014/caniuse-rs/releases)
+and double-clicking the file from Finder once downloaded. After attempting to run
+for the first time, you will need to open MacOS System Preferences -> Security & Privacy -> General tab,
+then click "Allow Anyway" to allow the `caniuse` executable to run.
 
 ## Usage
 
