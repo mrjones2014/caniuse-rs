@@ -6,7 +6,7 @@ on:
 
 jobs:
   build_all_targets:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     outputs: # map step output to job output for use in the GitHub Release job
       caniuse-macos-x86: ${{ steps.build_all_targets.outputs.caniuse-macos-x86 }}
       caniuse-macos-m1: ${{ steps.build_all_targets.outputs.caniuse-macos-m1 }}
@@ -28,7 +28,7 @@ jobs:
           echo "::set-output name=caniuse-linux-x86::target/x86_64-unknown-linux-gnu/release/caniuse"
 
   build_alfred_workflow:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     needs: build_all_targets
     outputs: # map step output to job output for use in the GitHub Release job
       alfred_workflow_file: ${{ steps.build_alfred_workflow.outputs.alfred_workflow_file }}
@@ -44,7 +44,7 @@ jobs:
           echo "::set-output name=alfred_workflow_file::caniuse.alfredworkflow"
 
   create_github_release:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     needs: [build_all_targets, build_alfred_workflow]
     steps:
       - uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
             ${{ needs.build_alfred_workflow.outputs.alfred_workflow_file }}
 
   cargo_publish:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     needs: create_github_release
     steps:
       - uses: actions/checkout@v2
