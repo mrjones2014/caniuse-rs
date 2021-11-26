@@ -26,9 +26,11 @@ jobs:
         with:
           toolchain: stable
       - name: Install Targets
+        run: make install-targets-linux
+      - name: Build Linux
         id: build_linux
         run: |
-          make install-targets-linux
+          make build-linux
           echo "::set-output name=caniuse-linux-x86::target/x86_64-unknown-linux-gnu/release/caniuse"
 
   build_mac:
