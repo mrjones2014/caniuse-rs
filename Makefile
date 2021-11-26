@@ -41,6 +41,7 @@ alfred-workflow:
 	zip -j -D $(WORKFLOW_FILE_NAME) images/icon.png
 	# temporarily rename so it has the right name inside the zip
 	mv $(CANIUSE_BIN) caniuse
+	chmod +x caniuse
 	zip -j -D $(WORKFLOW_FILE_NAME) caniuse
 	mv caniuse $(CANIUSE_BIN)
 
