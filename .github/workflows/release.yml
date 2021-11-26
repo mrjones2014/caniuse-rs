@@ -5,7 +5,7 @@ on:
       - 'v*'
 
 jobs:
-  lint_with_clippy:
+  lint-with-clippy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,11 +16,11 @@ jobs:
         with:
           command: clippy
 
-  build_linux:
+  build-linux:
     runs-on: ubuntu-latest
-    needs: lint_with_clippy
+    needs: lint-with-clippy
     outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-linux-x86: ${{ steps.build_linux.outputs.caniuse-linux-x86 }}
+      caniuse-linux-x86: ${{ steps.build-linux.outputs.caniuse-linux-x86 }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -29,16 +29,16 @@ jobs:
       - name: Install Targets
         run: make install-targets-linux
       - name: Build Linux
-        id: build_linux
+        id: build-linux
         run: |
           make build-linux
           echo "::set-output name=caniuse-linux-x86::target/x86_64-unknown-linux-gnu/release/caniuse"
 
-  build_mac_x86:
+  build-macos-x86:
     runs-on: macos-11
-    needs: lint_with_clippy
+    needs: lint-with-clippy
     outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-macos-x86: ${{ steps.build_mac_x86.outputs.caniuse-macos-x86 }}
+      caniuse-macos-x86: ${{ steps.build-macos-x86.outputs.caniuse-macos-x86 }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -47,16 +47,16 @@ jobs:
       - name: Install Targets
         run: make install-targets-mac-x86
       - name: Build MacOS
-        id: build_mac_x86
+        id: build-macos-x86
         run: |
           make build-macos-x86
           echo "::set-output name=caniuse-macos-x86::target/x86_64-apple-darwin/release/caniuse"
 
-  build_mac_arm:
+  build-macos-arm:
     runs-on: macos-11
-    needs: lint_with_clippy
+    needs: lint-with-clippy
     outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-macos-arm: ${{ steps.build_mac_arm.outputs.caniuse-macos-arm }}
+      caniuse-macos-arm: ${{ steps.build-macos-arm.outputs.caniuse-macos-arm }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -65,33 +65,33 @@ jobs:
       - name: Install Targets
         run: make install-targets-mac-arm
       - name: Build MacOS
-        id: build_mac_arm
+        id: build-macos-arm
         run: |
           make build-macos-arm
           echo "::set-output name=caniuse-macos-arm::target/aarch64-apple-darwin/release/caniuse"
 
-  build_alfred_workflows:
+  build-alfred-workflows:
     runs-on: macos-11
-    needs: [build_mac_x86, build_mac_arm]
+    needs: [build-macos-x86, build-macos-arm]
     outputs: # map step output to job output for use in the GitHub Release job
-      alfred_workflow_file_x86: ${{ steps.build_alfred_workflows.outputs.alfred_workflow_file_x86 }}
-      alfred_workflow_file_arm: ${{ steps.build_alfred_workflows.outputs.alfred_workflow_file_arm }}
+      alfred-workflow-file-x86: ${{ steps.build-alfred-workflows.outputs.alfred-workflow-file-x86 }}
+      alfred-workflow-file-arm: ${{ steps.build-alfred-workflows.outputs.alfred-workflow-file-arm }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
       - name: Create Alfred Workflow File
-        id: build_alfred_workflows
+        id: build-alfred-workflows
         run: |
-          make WORKFLOW_FILE_NAME="caniuse-x86.alfredworkflow" CANIUSE_BIN="${{ needs.build_mac_x86.outputs.caniuse-macos-x86 }}" alfred-workflow
-          make WORKFLOW_FILE_NAME="caniuse-arm.alfredworkflow" CANIUSE_BIN="${{ needs.build_mac_arm.outputs.caniuse-macos-arm }}" alfred-workflow
-          echo "::set-output name=alfred_workflow_file_x86::caniuse-x86.alfredworkflow"
-          echo "::set-output name=alfred_workflow_file_arm::caniuse-arm.alfredworkflow"
+          make WORKFLOW_FILE_NAME="caniuse-x86.alfredworkflow" CANIUSE_BIN="${{ needs.build-macos-x86.outputs.caniuse-macos-x86 }}" alfred-workflow
+          make WORKFLOW_FILE_NAME="caniuse-arm.alfredworkflow" CANIUSE_BIN="${{ needs.build-macos-arm.outputs.caniuse-macos-arm }}" alfred-workflow
+          echo "::set-output name=alfred-workflow-file-x86::caniuse-x86.alfredworkflow"
+          echo "::set-output name=alfred-workflow-file-arm::caniuse-arm.alfredworkflow"
 
-  create_github_release:
+  create-github-release:
     runs-on: ubuntu-latest
-    needs: [build_linux, build_mac_x86, build_mac_arm, build_alfred_workflows]
+    needs: [build-linux, build-macos-x86, build-macos-arm, build-alfred-workflows]
     steps:
       - uses: actions/checkout@v2
       - name: Create GitHub Release
@@ -100,15 +100,15 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            ${{ needs.build_mac_x86.outputs.caniuse-macos-x86 }}
-            ${{ needs.build_mac_arm.outputs.caniuse-macos-arm }}
-            ${{ needs.build_linux.outputs.caniuse-linux-x86 }}
-            ${{ needs.build_alfred_workflows.outputs.alfred_workflow_file_x86 }}
-            ${{ needs.build_alfred_workflows.outputs.alfred_workflow_file_arm }}
+            ${{ needs.build-macos-x86.outputs.caniuse-macos-x86 }}
+            ${{ needs.build-macos-arm.outputs.caniuse-macos-arm }}
+            ${{ needs.build-linux.outputs.caniuse-linux-x86 }}
+            ${{ needs.build-alfred-workflows.outputs.alfred-workflow-file-x86 }}
+            ${{ needs.build-alfred-workflows.outputs.alfred-workflow-file-arm }}
 
-  cargo_publish:
+  cargo-publish:
     runs-on: ubuntu-latest
-    needs: create_github_release
+    needs: create-github-release
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
