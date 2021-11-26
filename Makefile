@@ -1,6 +1,9 @@
-.PHONY: install-targets-mac
-install-targets-mac:
+.PHONY: install-targets-mac-x86
+install-targets-mac-x86:
 	rustup target add x86_64-apple-darwin
+
+.PHONY: install-targets-mac-m1
+install-targets-mac-m1:
 	rustup target add aarch64-apple-darwin
 
 .PHONY: install-targets-linux

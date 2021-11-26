@@ -19,7 +19,7 @@ jobs:
   build_linux:
     runs-on: ubuntu-latest
     outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-linux-x86: ${{ steps.build_all_targets.outputs.caniuse-linux-x86 }}
+      caniuse-linux-x86: ${{ steps.build_linux.outputs.caniuse-linux-x86 }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -33,29 +33,43 @@ jobs:
           make build-linux
           echo "::set-output name=caniuse-linux-x86::target/x86_64-unknown-linux-gnu/release/caniuse"
 
-  build_mac:
+  build_mac_x86:
     runs-on: macos-11
     outputs: # map step output to job output for use in the GitHub Release job
-      caniuse-macos-x86: ${{ steps.build_all_targets.outputs.caniuse-macos-x86 }}
-      caniuse-macos-m1: ${{ steps.build_all_targets.outputs.caniuse-macos-m1 }}
+      caniuse-macos-x86: ${{ steps.build_mac_x86.outputs.caniuse-macos-x86 }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
       - name: Install Targets
-        run: make install-targets-mac
+        run: make install-targets-mac-x86
       - name: Build MacOS
-        id: build_mac
+        id: build_mac_x86
         run: |
           make build-macos-x86
-          make build-macos-m1
           echo "::set-output name=caniuse-macos-x86::target/x86_64-apple-darwin/release/caniuse"
+
+  build_mac_m1:
+    runs-on: macos-11
+    outputs: # map step output to job output for use in the GitHub Release job
+      caniuse-macos-m1: ${{ steps.build_mac_m1.outputs.caniuse-macos-m1 }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install Targets
+        run: make install-targets-mac-m1
+      - name: Build MacOS
+        id: build_mac_m1
+        run: |
+          make build-macos-m1
           echo "::set-output name=caniuse-macos-m1::target/aarch64-apple-darwin/release/caniuse"
 
   build_alfred_workflow:
     runs-on: macos-11
-    needs: build_mac
+    needs: build_mac_x86
     outputs: # map step output to job output for use in the GitHub Release job
       alfred_workflow_file: ${{ steps.build_alfred_workflow.outputs.alfred_workflow_file }}
     steps:
@@ -71,7 +85,7 @@ jobs:
 
   create_github_release:
     runs-on: ubuntu-latest
-    needs: [build_linux, build_mac, build_alfred_workflow]
+    needs: [build_linux, build_mac_x86, build_mac_m1, build_alfred_workflow]
     steps:
       - uses: actions/checkout@v2
       - name: Create GitHub Release
@@ -80,8 +94,8 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            ${{ needs.build_mac.outputs.caniuse-macos-x86 }}
-            ${{ needs.build_mac.outputs.caniuse-macos-m1 }}
+            ${{ needs.build_mac_x86.outputs.caniuse-macos-x86 }}
+            ${{ needs.build_mac_m1.outputs.caniuse-macos-m1 }}
             ${{ needs.build_linux.outputs.caniuse-linux-x86 }}
             ${{ needs.build_alfred_workflow.outputs.alfred_workflow_file }}
 
