@@ -43,7 +43,7 @@ jobs:
           make alfred-workflow
           echo "::set-output name=alfred_workflow_file::caniuse.alfredworkflow"
 
-  create-github-release:
+  create_github_release:
     runs-on: macos-11
     needs: [build_all_targets, build_alfred_workflow]
     steps:
@@ -59,9 +59,9 @@ jobs:
             ${{ needs.build_all_targets.outputs.caniuse-linux-x86 }}
             ${{ needs.build_alfred_workflow.outputs.alfred_workflow_file }}
 
-  cargo-publish:
+  cargo_publish:
     runs-on: macos-11
-    needs: create-github-release
+    needs: create_github_release
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
