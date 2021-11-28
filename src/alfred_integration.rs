@@ -32,12 +32,13 @@ pub fn get_json(
     query: &str,
     pretty: &bool,
 ) -> Result<String, serde_json::Error> {
+    let lowercase_query = query.to_lowercase();
     let alfred_items = AlfredItemList {
         items: features
             .iter()
             .filter(|feature| {
                 let match_str = feature.string_for_matching().to_lowercase();
-                match_str.contains(&query) || query.contains(&match_str)
+                match_str.contains(&lowercase_query) || lowercase_query.contains(&match_str)
             })
             .map(|feature| AlfredItem::from(feature.to_owned()))
             .collect(),
