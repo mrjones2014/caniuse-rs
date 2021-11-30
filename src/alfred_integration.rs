@@ -27,19 +27,10 @@ impl From<Feature> for AlfredItem {
     }
 }
 
-pub fn get_json(
-    features: &[Feature],
-    query: &str,
-    pretty: &bool,
-) -> Result<String, serde_json::Error> {
-    let lowercase_query = query.to_lowercase();
+pub fn get_json(features: &[Feature], pretty: &bool) -> Result<String, serde_json::Error> {
     let alfred_items = AlfredItemList {
         items: features
             .iter()
-            .filter(|feature| {
-                let match_str = feature.string_for_matching().to_lowercase();
-                match_str.contains(&lowercase_query) || lowercase_query.contains(&match_str)
-            })
             .map(|feature| AlfredItem::from(feature.to_owned()))
             .collect(),
     };

@@ -2,61 +2,58 @@
 extern crate lazy_static;
 
 use std::{env, error::Error};
+use structopt::StructOpt;
 
 mod alfred_integration;
 mod api;
 mod browser;
 mod constants;
 mod feature;
+mod opts;
 mod skim_finder;
 mod url;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let args: Vec<String> = env::args().map(|arg| arg.to_lowercase()).collect();
+    let args = opts::Opts::from_args();
 
-    let version = env!("CARGO_PKG_VERSION");
-    if args.contains(&String::from("--version")) {
-        println!("caniuse v{}", version);
+    if args.version {
+        let version = env!("CARGO_PKG_VERSION");
+        println!("caniuse {}", version);
         return Ok(());
     }
 
-    let update_cache = args.contains(&String::from("--update"));
-    api::ensure_cached_data(update_cache)?;
-    if update_cache {
-        println!("Updated cache written to {}", &*constants::CACHE_PATH);
+    if args.update {
+        api::ensure_cached_data(true)?;
+        // printing this to stderr so that we don't break JSON parsing
+        // if this CLI is being used in a script or a Neovim plugin, for example
+        eprintln!("Updated cache written to {}", &*constants::CACHE_PATH);
+    }
+
+    let mut features = api::get_data()?;
+
+    if let Some(query) = &args.query {
+        let lowercased_query = query.to_lowercase();
+        features = features
+            .into_iter()
+            .filter(|feature| {
+                let match_str = feature.string_for_matching().to_lowercase();
+                match_str.contains(&lowercased_query) || lowercased_query.contains(&match_str)
+            })
+            .collect();
+    }
+
+    if args.alfred {
+        let alfred_items_json = alfred_integration::get_json(&features, &args.pretty)?;
+        println!("{}", alfred_items_json);
         return Ok(());
     }
 
-    if args.contains(&String::from("--help")) {
-        println!("{}", constants::HELP_TEXT);
-        return Ok(());
-    }
-
-    let features = api::get_data()?;
-
-    if args.contains(&String::from("--query")) {
-        if args.len() < 2 {
-            panic!("--query must must immediately be followed by a query");
-        }
-        let query = &args[2];
-        println!(
-            "{}",
-            alfred_integration::get_json(
-                &features,
-                &query,
-                &args.contains(&String::from("--pretty"))
-            )?
-        );
-        return Ok(());
-    }
-
-    if args.contains(&String::from("--dump")) {
-        let printer = if args.contains(&String::from("--pretty")) {
-            serde_json::to_string_pretty
-        } else {
-            serde_json::to_string
+    if args.dump || args.query.is_some() {
+        let json = match &args.pretty {
+            true => serde_json::to_string_pretty(&features)?,
+            false => serde_json::to_string(&features)?,
         };
-        println!("{}", printer(&features)?);
+        println!("{}", json);
         return Ok(());
     }
 

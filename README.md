@@ -41,14 +41,18 @@ pressing enter will search for the query you've typed by opening `https://canius
 ## Options
 
 ```
- caniuse [options]
+USAGE:
+    caniuse [FLAGS] [OPTIONS]
 
- OPTIONS:
+FLAGS:
+        --alfred     Transform JSON structure for use in Alfred workflow. See:
+                     https://www.alfredapp.com/help/workflows/inputs/script-filter/json/
+    -d, --dump       Print currently cached data and exit instead of using fuzzy-finder
+    -h, --help       Prints help information
+    -p, --pretty     Pretty-print JSON output, must be combined with --dump or --query option
+    -u, --update     Force-update cached data before querying
+    -v, --version    Print the version and exit
 
- --dump           Dump the currently cached JSON data and exit
- --pretty         Pretty-print the JSON output, must be combined with --dump or --query [query]
- --query [query]  Output JSON instead of using fuzzy-finder, used for Alfred integration
- --update         Force update the currently cached JSON data and exit
- --version        Print the version and exit
- --help           Show this help text
+OPTIONS:
+    -q, --query <query>    Run a query and output the JSON results instead of using the fuzzy-finder
 ```
