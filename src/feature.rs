@@ -12,7 +12,7 @@ pub struct Feature {
 
 impl Feature {
     pub fn string_for_matching(&self) -> String {
-        format!("{}: {}: {}", self.name, self, self.description)
+        format!("{}: {}: {}", self.name, self.title, self.description)
     }
 }
 
