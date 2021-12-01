@@ -32,14 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut features = api::get_data()?;
 
     if let Some(query) = &args.query {
-        let lowercased_query = query.to_lowercase();
-        features = features
-            .into_iter()
-            .filter(|feature| {
-                let match_str = feature.string_for_matching().to_lowercase();
-                match_str.contains(&lowercased_query) || lowercased_query.contains(&match_str)
-            })
-            .collect();
+        features = skim_finder::find_noninteractive(&features, query.to_string());
     }
 
     if args.alfred {
@@ -57,6 +50,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
-    skim_finder::find_with_skim(&features);
+    skim_finder::find_interactive(&features);
     Ok(())
 }
