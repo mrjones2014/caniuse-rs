@@ -79,7 +79,7 @@
 				<key>script</key>
 				<string>query=$1
 
-./caniuse --alfred --query $query</string>
+./caniuse --alfred --query "$query"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
